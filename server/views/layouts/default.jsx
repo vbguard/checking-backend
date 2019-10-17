@@ -1,14 +1,17 @@
-import React, { Component } from 'react';
+const React = require('react');
 
+const { Component } = React;
 class DefaultLayout extends Component {
   render() {
     return (
       <html>
-        <head><title>{this.props.title}</title></head>
+        <head>
+          <title>{this.props.title}</title>
+        </head>
         <body>{this.props.children}</body>
       </html>
     );
   }
 }
 
-export default DefaultLayout;
+module.exports = DefaultLayout;

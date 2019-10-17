@@ -11,6 +11,8 @@ const swaggerUi = require('swagger-ui-express');
 
 const swaggerDocument = require('../config/swagger.json');
 
+require('dotenv').config();
+
 // Import Router
 const router = require('./routes/routes');
 const config = require('../config/config');
@@ -39,7 +41,7 @@ app.use(cookieParser());
 app
   .disable('x-powered-by')
   .use(cors('*'))
-  .use(helmet())
+  // .use(helmet())
   .use(
     sassMiddleware({
       src: path.join(__dirname, 'public'),
