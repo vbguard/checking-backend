@@ -1,20 +1,20 @@
-const mongoose = require('mongoose');
 const Tasks = require('../../models/task.model');
 
-const createTask = (req, res, next) => {
+const createTask = (req, res) => {
+  const userId = req.user.id;
+
   const task = new Tasks({
-    _id: mongoose.Types.ObjectId(),
     ...req.body,
-    created: Date.now()
+    userId
   });
 
   task
     .save()
     .then(task => {
-      res.status(200).json({ status: 'success', task: task });
+      res.status(201).json({ status: 'success', task: task });
     })
     .catch(err => {
-      res.json({
+      res.status(400).json({
         status: 'error',
         message: err.message
       });

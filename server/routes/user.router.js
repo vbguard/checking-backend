@@ -13,7 +13,7 @@ const passportCheck = passport.authenticate('jwt', {
 });
 
 router
-  .post('/:id')
+  .post('/:userId')
   .get('/', passportCheck, getUser)
   .delete('/', passportCheck, deleteUser)
   .put('/', passportCheck, updateUser)

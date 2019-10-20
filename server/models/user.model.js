@@ -8,8 +8,7 @@ const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      trim: true,
-      required: true
+      trim: true
     },
     email: {
       type: String,
@@ -41,16 +40,9 @@ UserSchema.methods.getPublicFields = function() {
   const returnObject = {
     userData: {
       name: this.name,
-      age: this.age,
-      email: this.email,
-      isChild: this.isChild,
-      scores: this.scores,
-      avatar: this.avatar
+      email: this.email
     },
-    token: this.token,
-    childs: this.childs,
-    tasks: this.tasks,
-    goals: this.goals
+    token: this.token
   };
   return returnObject;
 };

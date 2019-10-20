@@ -1,9 +1,10 @@
 const Tasks = require('../../models/task.model');
 
-const getTasks = (req, res) => {
+const getTask = (req, res) => {
   const userId = req.user.id;
+  const taskId = req.param.taskId;
 
-  Tasks.find({ userId })
+  Tasks.find({ userId, taskId })
     .then(tasks => {
       res.status(200).json({
         status: 'success',
@@ -18,4 +19,4 @@ const getTasks = (req, res) => {
     );
 };
 
-module.exports = getTasks;
+module.exports = getTask;

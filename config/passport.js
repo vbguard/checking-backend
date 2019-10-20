@@ -1,113 +1,68 @@
+/* eslint-disable func-names */
+const passport = require('passport');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local').Strategy;
-// const FacebookStrategy = require('passport-facebook').Strategy;
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const User = require('../server/models/user.model.js');
+const jwtSecretKey = require('../config/config').JWT_SECRET_KEY;
+const Users = require('../server/models/user.model');
 
-module.exports = function(passport) {
-  const opts = {};
-  opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-  opts.secretOrKey = 'secret_super_nano_KEY_MEGA';
-
-  passport.use(
-    new JwtStrategy(opts, (jwt_payload, done) => {
-      User.findOne({ _id: jwt_payload.user }, (err, user) => {
-        if (err) return done(err, false);
-
-        if (user) return done(null, user);
-
-        return done(null, false);
-        // or you could create a new account
-      });
-    })
-  );
-
-  passport.use(
-    new LocalStrategy(
-      {
-        usernameField: 'username',
-        passwordField: 'password'
-      },
-      (username, password, done) => {
-        User.findOne({ email: username }, (err, user) => {
-          if (err) throw err;
-
-          if (!user) return done(null, false, { message: 'Unknown User' });
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password',
+      session: false
+    },
+    (email, password, done) => {
+      Users.findOne({ email })
+        .then(user => {
+          if (!user)
+            return done(null, false, {
+              errors: { message: 'Incorrect email or password' }
+            });
 
           user.comparePassword(password, (err, isMatch) => {
-            if (err) throw err;
-            if (isMatch) return done(null, user);
-            return done(null, false, { message: 'Invalid password' });
+            if (!isMatch)
+              return done(null, false, {
+                message: 'Incorrect email or password'
+              });
+
+            if (isMatch && !err) {
+              user.getJWT();
+              const userData = user.getPublicFields();
+              return done(null, userData, {
+                message: 'Logged In Successfully'
+              });
+            }
           });
-        });
-      }
-    )
-  );
+        })
+        .catch(done);
+    }
+  )
+);
 
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
+passport.use(
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: jwtSecretKey
+    },
+    (jwtPayload, cb) => {
+      // find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
+      Users.findById(jwtPayload.id)
+        .then(user => cb(null, user))
+        .catch(err => cb(err));
+    }
+  )
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  Users.findById(id, (err, user) => {
+    done(err, user);
   });
-
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-      done(err, user);
-    });
-  });
-
-  // passport.use(
-  //   new FacebookStrategy(
-  //     {
-  //       clientID: '',
-  //       clientSecret: '',
-  //       callbackURL: `https://domain/api/auth/facebook/callback`
-  //     },
-  //     async (accessToken, refreshToken, profile, done) => {
-  //       try {
-  //         const user = await User.findOne({ facebookId: profile.id });
-  //         if (user) return done(err, user);
-  //         if (!user) {
-  //           const newUser = await new User({
-  //             githubId: profile._json.id,
-  //             name: profile._json.name
-  //           });
-
-  //           newUser.save((err, user) => done(err, user));
-  //         }
-  //       } catch (error) {
-  //         done(error, null);
-  //       }
-  //     }
-  //   )
-  // );
-
-  // passport.use(
-  //   new GoogleStrategy(
-  //     {
-  //       clientID: '',
-  //       clientSecret: '',
-  //       callbackURL: `https://domain/api/auth/google/callback`
-  //     },
-  //     async (accessToken, refreshToken, profile, done) => {
-  //       console.log(profile);
-  //       try {
-  //         const user = await User.findOne({ googleId: profile.id });
-
-  //         if (user) return done(err, user);
-  //         if (!user) {
-  //           const newUser = await new User({
-  //             googleId: profile._json.sub,
-  //             name: profile._json.name,
-  //             avatar: profile._json.picture
-  //           });
-
-  //           newUser.save((err, user) => done(err, user));
-  //         }
-  //       } catch (error) {
-  //         done(error, null);
-  //       }
-  //     }
-  //   )
-  // );
-};
+});

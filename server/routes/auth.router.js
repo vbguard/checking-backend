@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const passport = require('passport');
 
-const { login, register, logOut } = require('../controllers/auth');
+const { login, userSignup, logOut } = require('../controllers/auth');
 
 const passportCheck = passport.authenticate('jwt', {
   session: false
@@ -35,7 +35,7 @@ router
     }
   )
 
-  .post('/register', register)
+  .post('/register', userSignup)
   .post('/logout', passportCheck, logOut);
 
 module.exports = router;

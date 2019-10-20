@@ -30,6 +30,7 @@
       "allowModules": ["morgan"]
     }],
     "indent": "off",
+    "eqeqeq":"off",
     "object-property-newline": "off",
     "array-bracket-spacing": "off",
     "no-sync": "off",

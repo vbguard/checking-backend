@@ -20,7 +20,7 @@ const config = require('../config/config');
 const app = express();
 
 // Connect Mongo DB
-require('../config/mongodb');
+require('../config/mongodb')();
 
 const isDevMode = process.env.NODE_ENV !== 'production';
 // view engine setup
@@ -53,7 +53,7 @@ app
   .use(passport.initialize())
   .use(passport.session());
 
-require('../config/passport')(passport);
+require('../config/passport');
 
 app.use(express.static(path.join(__dirname, 'static')));
 
@@ -61,7 +61,7 @@ app
   .get('/', (req, res) => {
     res.render('index', { name: 'John' });
   })
-  .use(config.apiPATH, router)
+  .use('/api/v1', router)
   .use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
   // catch 404 and forward to error handler

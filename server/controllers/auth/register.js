@@ -15,10 +15,6 @@ const userSignup = (req, res) => {
       password: Joi.string()
         .min(6)
         .max(16)
-        .required(),
-      name: Joi.string()
-        .min(3)
-        .max(16)
         .required()
     })
     .options({
@@ -27,7 +23,7 @@ const userSignup = (req, res) => {
     });
 
   const result = schema.validate(req.body);
-
+  console.log('result', result);
   if (result.error) throw new ValidationError(result.error.message);
 
   const sendError = error => {
@@ -40,10 +36,11 @@ const userSignup = (req, res) => {
   };
 
   const newUser = new User(result.value);
-
+  console.log('newUser', newUser);
   newUser
     .save()
     .then(() => {
+      console.log('sss');
       login(req, res);
     })
     .catch(sendError);

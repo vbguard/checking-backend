@@ -56,7 +56,7 @@ const userLogin = (req, res) => {
         },
         err => {
           if (err) res.send(err);
-
+          console.log('user', user);
           sendResponse(user);
         }
       );

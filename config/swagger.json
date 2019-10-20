@@ -9,40 +9,114 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "basePath": "/api",
+  "basePath": "/api/v1",
   "schemes": ["https", "http"],
-  "servers": [{
-      "url": "https://domain/api",
+  "servers": [
+    {
+      "url": "https://cheking.goit.co.ua/api/v1",
       "description": "The production API server"
     },
     {
-      "url": "http://localhost:50005/api",
+      "url": "http://localhost:5000/api/v1",
       "description": "The production API server"
     }
   ],
-  "tags": [{
-      "name": "Get list of Tests and start answering",
-      "description": "Routes"
+  "tags": [
+    {
+      "name": "Public",
+      "description": "NoProtected routes"
     },
     {
-      "name": "Answer and Result",
-      "description": "Routes for get answer by question and return results"
+      "name": "Protected",
+      "description": "Protected routes"
     }
   ],
   "consumes": ["application/json"],
   "produces": ["application/json"],
+  "securityDefinitions": {},
   "paths": {
-    "/tests": {
-      "get": {
-        "tags": ["Get list of Tests and start answering"],
-        "summary": "It's first fetch - return all languages in system, for HomePage",
+    "/auth/login": {
+      "post": {
+        "tags": ["Public"],
+        "summary": "route for login user in system",
+        "requestBody": {
+          "description": "",
+          "required": ["email", "password"],
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "example": {
+                "email": "email@email.com",
+                "password": "password"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Languages"
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid Password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Field password empty"
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Field nickname empty"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -50,20 +124,164 @@
         }
       }
     },
-    "/tests/{languageId}": {
-      "parameters": [{
-        "name": "languageId",
-        "in": "path",
-        "description": "languageId to use",
-        "required": true,
-        "schema": {
-          "type": "string"
+    "/auth/register": {
+      "post": {
+        "tags": ["Public"],
+        "summary": "route for register user in system",
+        "requestBody": {
+          "description": "",
+          "required": ["email", "password"],
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "example": {
+                "email": "testovoy@gmail.com",
+                "password": "password",
+                "nickname": "Testovoy"
+              }
+            }
+          }
         },
-        "style": "simple"
-      }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid Password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Field password empty"
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Field nickname empty"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Protected"],
+        "summary": "Logout user from system",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "$ref": "#/components/securitySchemes/bearerAuth"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid Password"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
       "get": {
-        "tags": ["Get list of Tests and start answering"],
+        "tags": ["Protected"],
         "summary": "Get first question by language ID, response - question, userId, languageId, ",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "$ref": "#/components/securitySchemes/bearerAuth"
+            },
+            "style": "simple"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -71,10 +289,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#/components/schemas/StartAnswering"
+                  "$ref": "#/components/schemas/GetTasks"
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
             "description": "BAD",
@@ -83,12 +304,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
-                      "type": "object"
-                    },
+                    "success": { "type": "boolean" },
+                    "error": { "type": "object" },
                     "message": {
-                      "type": "string",
-                      "example": "Not found question by this language"
+                      "type": "string"
                     }
                   }
                 }
@@ -96,50 +315,30 @@
             }
           }
         }
-      }
-    },
-    "/tests/cancel/{userId}": {
+      },
       "post": {
-        "tags": ["Get list of Tests and start answering"],
-        "description": "If user want to cancel answering",
-        "parameters": [{
-          "name": "userId",
-          "in": "path",
-          "description": "userId to use",
-          "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "style": "simple"
-        }],
-        "responses": {
-          "200": {
-            "description": "OK"
+        "tags": ["Protected"],
+        "summary": "Create new task",
+        "security": ["bearerAuth"],
+        "description": "Create new task",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "$ref": "#/components/securitySchemes/bearerAuth"
+            },
+            "style": "simple"
           }
-        }
-      }
-    },
-    "/answer/{userId}": {
-      "parameters": [{
-        "name": "userId",
-        "in": "path",
-        "description": "userId to use",
-        "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "style": "simple"
-      }],
-      "post": {
-        "tags": ["Answer and Result"],
-        "summary": "Answering check and return result checking and next question, the last check return all results and statistic",
+        ],
         "requestBody": {
-          "description": "Optional description in *Markdown*",
-          "required": true,
           "content": {
-            "application/json": {
+            "applecation/json": {
               "schema": {
-                "$ref": "#/components/schemas/AnswerSchema"
+                "$ref": "#/components/schemas/TaskCreate"
               }
             }
           }
@@ -150,10 +349,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AnswerResponse"
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetTasks"
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
             "description": "BAD",
@@ -162,12 +365,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
-                      "type": "object"
-                    },
+                    "success": { "type": "boolean" },
+                    "error": { "type": "object" },
                     "message": {
-                      "type": "string",
-                      "example": "Not found question by this language"
+                      "type": "string"
                     }
                   }
                 }
@@ -175,29 +376,30 @@
             }
           }
         }
-      }
-    },
-    "/answer/skip/{userId}": {
-      "post": {
-        "tags": ["Answer and Result"],
-        "description": "If user want to skip this question and get next",
-        "parameters": [{
-          "name": "userId",
-          "in": "path",
-          "description": "userId to use",
-          "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "style": "simple"
-        }],
+      },
+      "delete": {
+        "tags": ["Protected"],
+        "summary": "Delete task",
+        "security": ["bearerAuth"],
+        "description": "Delete task",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "$ref": "#/components/securitySchemes/bearerAuth"
+            },
+            "style": "simple"
+          }
+        ],
         "requestBody": {
-          "description": "Optional description in *Markdown*",
-          "required": true,
           "content": {
-            "application/json": {
+            "applecation/json": {
               "schema": {
-                "$ref": "#/components/schemas/AnswerSchema"
+                "$ref": "#/components/schemas/Task"
               }
             }
           }
@@ -208,10 +410,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AnswerResponse"
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetTasks"
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
             "description": "BAD",
@@ -220,12 +426,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
-                      "type": "object"
-                    },
+                    "success": { "type": "boolean" },
+                    "error": { "type": "object" },
                     "message": {
-                      "type": "string",
-                      "example": "Not found question by this language"
+                      "type": "string"
                     }
                   }
                 }
@@ -237,232 +441,215 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "api_key": {
+        "type": "scheme",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
-      "AnswerSchema": {
+      "LoginRequest": {
         "type": "object",
         "properties": {
-          "questionId": {
-            "type": "string"
-          },
-          "userAnswerNumber": {
-            "type": "number"
-          },
-          "questionNumber": {
-            "type": "number"
-          }
-        }
-      },
-      "ResultOfAnswers": {
-        "type": "object",
-        "properties": {
-          "finalResult": {
-            "type": "boolean",
-            "default": true,
-            "example": true
-          },
-          "allQuestionsCount": {
-            "type": "number",
-            "default": true,
-            "example": true
-          },
-          "result": {
-            "$ref": "#/components/schemas/ResultAnswer"
-          },
-          "userRightsAnswered": {
-            "type": "number"
-          },
-          "userRightAnsweredInPercentage": {
-            "type": "number"
-          },
-          "languageTitle": {
-            "type": "string"
-          },
-          "questions": {
-            "$ref": "#/components/schemas/FinalQuestions"
-          },
-          "timeStartAnswering": {
+          "email": {
             "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ResultAnswer": {
-        "type": "object",
-        "properties": {
-          "result": {
-            "type": "object",
-            "properties": {
-              "userAnswerCorrectly": {
-                "type": "boolean"
-              },
-              "questionExposition": {
-                "type": "string"
-              },
-              "userAnswer": {
-                "type": "number"
-              },
-              "rightAnswer": {
-                "type": "number"
-              }
-            }
-          }
-        }
-      },
-      "AnswerResponse": {
-        "type": "object",
-        "properties": {
-          "$ref": "#/components/schemas/ResultAnswer",
-          "allQuestionsCount": {
-            "type": "number",
-            "default": 25,
-            "example": 25
-          },
-          "questionNumber": {
-            "type": "string"
-          },
-          "nextQuestion": {
-            "$ref": "#/components/schemas/Question"
-          }
-        }
-      },
-      "Questions": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "$ref": "#/components/schemas/Question"
-        }
-      },
-      "Question": {
-        "type": "object",
-        "properties": {
-          "questionText": {
-            "type": "string",
+            "format": "email",
             "required": true
           },
-          "image": {
-            "type": "string"
-          },
-          "answers": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "answerNumber": {
-                  "type": "number",
-                  "required": true
-                },
-                "answerText": {
-                  "type": "string",
-                  "required": true
-                }
-              }
-            }
-          }
-        }
-      },
-      "FinalQuestions": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/FinalQuestion"
-        }
-      },
-      "FinalQuestion": {
-        "type": "object",
-        "properties": {
-          "questionText": {
+          "password": {
             "type": "string",
+            "maxLength": 15,
+            "minLength": 5,
             "required": true
+          }
+        },
+        "required": ["email", "password"],
+        "example": {
+          "email": "email@email.com",
+          "password": "password"
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
           },
-          "image": {
+          "password": {
             "type": "string"
           },
-          "answers": {
+          "nickname": { "type": "sting" }
+        },
+        "required": ["email", "password", "nickname"],
+        "example": {
+          "email": "testovoy@gmail.com",
+          "password": "password",
+          "nickname": "Testovoy"
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "GetTasks": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "success",
+            "example": "success"
+          },
+          "tasks": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "answerNumber": {
-                  "type": "number",
-                  "required": true
-                },
-                "answerText": {
-                  "type": "string",
-                  "required": true
-                }
-              }
+              "$ref": "#/components/schemas/Task"
             }
           }
         }
       },
-      "StartAnswering": {
+      "GetGoals": {
         "type": "object",
         "properties": {
-          "userId": {
+          "status": {
             "type": "string",
-            "format": "uuid"
+            "default": "success",
+            "example": "success"
           },
-          "languageTitle": {
-            "type": "string"
-          },
-          "questionNumber": {
-            "type": "number"
-          },
-          "allQuestionsCount": {
-            "type": "number"
-          },
-          "question": {
-            "type": "object",
-            "$ref": "#/components/schemas/Question"
-          },
-          "questionNumber": {
-            "type": "number"
-          },
-          "allQuestionsCount": {
-            "type": "number"
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Goal"
+            }
           }
         }
       },
-      "Language": {
+      "Task": {
         "type": "object",
         "properties": {
-          "languageId": {
-            "type": "string",
-            "format": "uuid"
-          },
           "title": {
-            "type": "string",
-            "required": true
+            "type": "string"
+          },
+          "description": { "type": "string" },
+          "_id": { "type": "string", "format": "uuid" },
+          "points": { "type": "number" }
+        }
+      },
+      "Goal": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
           },
           "description": {
             "type": "string"
           },
-          "image": {
+          "_id": {
             "type": "string",
-            "format": "base64"
+            "format": "uuid"
           },
-          "pullQuestions": {
-            "type": "number"
-          },
-          "countQuestions": {
-            "type": "number"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "points": {
+            "type": "number",
+            "format": "uuid"
           }
         }
       },
-      "Languages": {
+      "TaskCreate": {
         "type": "object",
         "properties": {
-          "languages": {
+          "title": {
+            "type": "string"
+          },
+          "description": { "type": "string" },
+          "dates": {
             "type": "array",
             "items": {
-              "type": "object",
-              "$ref": "#/components/schemas/Language"
+              "type": "string",
+              "format": "date-time"
             }
           }
         }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "success",
+            "example": "success"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "userData": {
+                "$ref": "#/components/schemas/User"
+              },
+              "token": {
+                "type": "string",
+                "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZDNhMTM4NmIxZTg1NTdjZjIzNjY3ODEiLCJpYXQiOjE1NjQwODcxNzV9.jSdzHuBSf4yKS6t7zwt0AoQIchHlz73JDOjfHVdbTBk"
+              }
+            }
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "default": "success",
+            "example": "success"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "userData": {
+                "$ref": "#/components/schemas/User"
+              },
+              "token": {
+                "type": "string",
+                "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZDNhMTM4NmIxZTg1NTdjZjIzNjY3ODEiLCJpYXQiOjE1NjQwODcxNzV9.jSdzHuBSf4yKS6t7zwt0AoQIchHlz73JDOjfHVdbTBk"
+              },
+              "childs": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              },
+              "goals": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Goal"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
       }
     }
   }
