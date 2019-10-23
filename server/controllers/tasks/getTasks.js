@@ -1,9 +1,10 @@
+const ObjectId = require('mongoose').Types.ObjectId;
 const Tasks = require('../../models/task.model');
 
 const getTasks = (req, res) => {
   const userId = req.user.id;
 
-  Tasks.find({ userId })
+  Tasks.aggregate([{ $match: { userId: ObjectId(userId) } }])
     .then(tasks => {
       res.status(200).json({
         status: 'success',

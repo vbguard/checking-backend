@@ -522,22 +522,6 @@
           }
         }
       },
-      "GetGoals": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "default": "success",
-            "example": "success"
-          },
-          "tasks": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Goal"
-            }
-          }
-        }
-      },
       "Task": {
         "type": "object",
         "properties": {
@@ -546,25 +530,22 @@
           },
           "description": { "type": "string" },
           "_id": { "type": "string", "format": "uuid" },
-          "points": { "type": "number" }
-        }
-      },
-      "Goal": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "_id": {
+          "time": { "type": "string" },
+          "role": {
             "type": "string",
-            "format": "uuid"
+            "enum": ["Partner", "Learner", "Daughter/Son", "Co-worker", "None"]
           },
-          "points": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "priority": {
             "type": "number",
-            "format": "uuid"
+            "enum": [1, 2, 3]
+          },
+          "isComplete": {
+            "type": "boolean",
+            "default": false
           }
         }
       },
@@ -575,14 +556,25 @@
             "type": "string"
           },
           "description": { "type": "string" },
-          "dates": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "date-time"
-            }
+          "time": { "type": "string" },
+          "role": {
+            "type": "string",
+            "enum": ["Partner", "Learner", "Daughter/Son", "Co-worker", "None"]
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "priority": {
+            "type": "number",
+            "enum": [1, 2, 3]
+          },
+          "isComplete": {
+            "type": "boolean",
+            "default": false
           }
-        }
+        },
+        "required": ["title", "role", "date", "time"]
       },
       "LoginResponse": {
         "type": "object",
@@ -623,24 +615,6 @@
               "token": {
                 "type": "string",
                 "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZDNhMTM4NmIxZTg1NTdjZjIzNjY3ODEiLCJpYXQiOjE1NjQwODcxNzV9.jSdzHuBSf4yKS6t7zwt0AoQIchHlz73JDOjfHVdbTBk"
-              },
-              "childs": {
-                "type": "array",
-                "items": {
-                  "type": "object"
-                }
-              },
-              "tasks": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Task"
-                }
-              },
-              "goals": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Goal"
-                }
               }
             }
           }

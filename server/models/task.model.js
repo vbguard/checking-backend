@@ -4,33 +4,32 @@ const TasksSchema = new mongoose.Schema(
   {
     role: {
       type: String,
-      required: true,
+      default: 'None',
       enum: ['Partner', 'Learner', 'Daughter/Son', 'Co-worker', 'None']
     },
     date: {
-      type: String,
-      default: Date
+      type: Date,
+      default: Date.now()
     },
     title: {
       type: String,
       required: true,
-      unique: true,
       trim: true
     },
     description: String,
-    time: {
-      allDay: Boolean,
-      from: Number,
-      to: Number
-    },
+    time: { type: String, default: 'All day' },
     priority: {
       type: Number,
-      enum: [0, 1, 2],
-      default: 0
+      enum: [3, 1, 2],
+      default: 3
     },
     isComplete: {
       type: Boolean,
       default: false
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Users'
     }
   },
   {
@@ -53,4 +52,5 @@ TasksSchema.pre('findOneAndUpdate', function() {
   update.$inc.__v = 1;
 });
 
-module.exports = mongoose.model('Tasks', TasksSchema);
+const Tasks = mongoose.model('Tasks', TasksSchema);
+module.exports = Tasks;
