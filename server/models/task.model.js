@@ -8,8 +8,7 @@ const TasksSchema = new mongoose.Schema(
       enum: ['Partner', 'Learner', 'Daughter/Son', 'Co-worker', 'None']
     },
     date: {
-      type: Date,
-      default: Date.now()
+      type: Date
     },
     title: {
       type: String,
