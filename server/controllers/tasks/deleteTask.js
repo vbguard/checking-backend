@@ -1,7 +1,7 @@
 const Tasks = require('../../models/task.model');
 
 const deleteTask = (req, res) => {
-  const taskId = req.param.taskId;
+  const taskId = req.params.taskId;
 
   Tasks.findByIdAndDelete(taskId)
     .then(
