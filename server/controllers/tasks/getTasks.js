@@ -148,13 +148,27 @@ const getTasks = (req, res) => {
     //         }
     //       }
     //     }
-    //     // tomorrow: {
-    //     //   $cond: [{ $eq: ['$_id', today + 1] }, '$tasks', null]
-    //     // }
     //   }
     // }
   ])
     .then(tasks => {
+      if (tasks.length === 0)
+        return res.status(200).json({
+          status: 'succes',
+          tasks: {
+            todayTomorrow: {
+              today: [],
+              tomorrow: []
+            },
+            nextAfter: {
+              next: [],
+              after: []
+            },
+            burnedOut: [],
+            done: []
+          }
+        });
+
       res.status(200).json({
         status: 'success',
         tasks: {
