@@ -40,23 +40,10 @@ const getTasks = (req, res) => {
         description: true
       }
     },
-    // {
-    //   $group: {
-    //     _id: false,
-    //     tasks: {
-    //       $filter: {
-    //         input: '$$ROOT',
-    //         as: 'doc',
-    //         cond: { $eq: ['$$doc.dayofYear', today] }
-    //       }
-    //     }
-    //   }
-    // }
     {
       $group: {
         _id: false,
         tasks: { $push: '$$ROOT' }
-        // today:
       }
     },
     {
@@ -134,32 +121,6 @@ const getTasks = (req, res) => {
         }
       }
     }
-
-    // {
-    //   $group: {
-    //     _id: false,
-    //     itemsSold: { $addToSet: { $eq: ['$_id', today] } },
-    //     ttt: [{ $match: { $eq: ['$_id', today] } }],
-    //     today: {
-    //       $push: {
-    //         $cond: {
-    //           if: { $eq: ['$_id', today] },
-    //           then: '$tasks',
-    //           else: null
-    //         }
-    //       }
-    //     },
-    //     tomorrow: {
-    //       $push: {
-    //         $cond: {
-    //           if: { $eq: ['$_id', today + 1] },
-    //           then: '$tasks',
-    //           else: null
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   ])
     .then(tasks => {
       if (tasks.length === 0)
