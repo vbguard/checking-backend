@@ -20,7 +20,12 @@ const getTasks = (req, res) => {
     // }
     {
       $project: {
-        date: true,
+        date: {
+          $dateToString: {
+            date: '$date',
+            timezone: '+02:00'
+          }
+        },
         dayofYear: { $dayOfYear: '$date' },
         role: true,
         time: true,
