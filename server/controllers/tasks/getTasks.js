@@ -5,7 +5,7 @@ const moment = require('moment');
 const getTasks = (req, res) => {
   const userId = req.user.id;
   const today = moment().dayOfYear();
-  console.log('today', today);
+
   Tasks.aggregate([
     { $match: { userId: ObjectId(userId) } },
     // {
@@ -26,7 +26,12 @@ const getTasks = (req, res) => {
             timezone: '+02:00'
           }
         },
-        dayofYear: { $dayOfYear: '$date' },
+        dayofYear: {
+          $dayOfYear: {
+            date: '$date',
+            timezone: '+02:00'
+          }
+        },
         role: true,
         time: true,
         priority: true,
