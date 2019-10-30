@@ -107,7 +107,7 @@ const getTasks = (req, res) => {
             as: 'doc',
             cond: {
               $and: [
-                { $lte: ['$$doc.dayofYear', today] },
+                { $lt: ['$$doc.dayofYear', today] },
                 { $eq: ['$$doc.isComplete', false] }
               ]
             }
