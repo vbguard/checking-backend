@@ -8,20 +8,10 @@ const getTasks = (req, res) => {
   console.log('today', today);
   Tasks.aggregate([
     { $match: { userId: ObjectId(userId) } },
-    // {
-    //   $bucket: {
-    //     groupBy: { $dayOfYear: '$date' },
-    //     boundaries: [0, today],
-    //     default: 'Unknow',
-    //     output: {
-    //       today: { $push: { title: '$title' } }
-    //     }
-    //   }
-    // }
     {
       $project: {
         date: true,
-        dayofYear: { $dayOfYear: '$date' },
+        dayofYear: { $dayOfYear: { date: '$date', timezone: 'Europe/Kiev' } },
         role: true,
         time: true,
         priority: true,
@@ -30,23 +20,10 @@ const getTasks = (req, res) => {
         description: true
       }
     },
-    // {
-    //   $group: {
-    //     _id: false,
-    //     tasks: {
-    //       $filter: {
-    //         input: '$$ROOT',
-    //         as: 'doc',
-    //         cond: { $eq: ['$$doc.dayofYear', today] }
-    //       }
-    //     }
-    //   }
-    // }
     {
       $group: {
         _id: false,
         tasks: { $push: '$$ROOT' }
-        // today:
       }
     },
     {
@@ -124,32 +101,6 @@ const getTasks = (req, res) => {
         }
       }
     }
-
-    // {
-    //   $group: {
-    //     _id: false,
-    //     itemsSold: { $addToSet: { $eq: ['$_id', today] } },
-    //     ttt: [{ $match: { $eq: ['$_id', today] } }],
-    //     today: {
-    //       $push: {
-    //         $cond: {
-    //           if: { $eq: ['$_id', today] },
-    //           then: '$tasks',
-    //           else: null
-    //         }
-    //       }
-    //     },
-    //     tomorrow: {
-    //       $push: {
-    //         $cond: {
-    //           if: { $eq: ['$_id', today + 1] },
-    //           then: '$tasks',
-    //           else: null
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   ])
     .then(tasks => {
       if (tasks.length === 0)
