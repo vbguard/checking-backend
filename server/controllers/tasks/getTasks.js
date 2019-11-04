@@ -13,13 +13,13 @@ const getTasks = (req, res) => {
         date: {
           $dateToString: {
             date: '$date',
-            timezone: 'Europe/Kyiv'
+            timezone: 'Europe/Kiev'
           }
         },
         dayofYear: {
           $dayOfYear: {
             date: '$date',
-            timezone: 'Europe/Kyiv'
+            timezone: 'Europe/Kiev'
           }
         },
         role: true,
