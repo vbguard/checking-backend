@@ -63,7 +63,7 @@ app
   })
   .use('/api/v1', router)
   .use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-
+  .use('*', express.static(path.join(__dirname, 'client')))
   // catch 404 and forward to error handler
   .use((req, res, next) => {
     res.render('error', { status: 404 });
