@@ -55,15 +55,15 @@ app
 
 require('../config/passport');
 
-app.use(express.static(path.join(__dirname, 'static')));
-
 app
-  .get('/', (req, res) => {
-    res.render('index', { name: 'John' });
-  })
+  .use(express.static(path.join(__dirname, '..', 'static')))
+  .use('/login', express.static(path.join(__dirname, '..', 'static')))
+  .use('/registration', express.static(path.join(__dirname, '..', 'static')))
+  .use('/dashboard/:page', express.static(path.join(__dirname, '..', 'static')))
+  .use('/statistics', express.static(path.join(__dirname, '..', 'static')))
   .use('/api/v1', router)
   .use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-  .use('*', express.static(path.join(__dirname, 'client')))
+  .use(express.static(path.join(__dirname, '..', 'static')))
   // catch 404 and forward to error handler
   .use((req, res, next) => {
     res.render('error', { status: 404 });
